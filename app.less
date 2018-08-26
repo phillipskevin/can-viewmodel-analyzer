@@ -1,0 +1,37 @@
+/* grid stuff */
+.grid-container {
+	display: grid;
+	height: 100%;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr 1fr 1fr;
+	grid-template-areas: "header header"
+											 "left right"
+											 "left right"
+											 "left right";
+}
+
+.header {
+	grid-area: header;
+}
+
+.source-panel {
+	grid-area: left;
+}
+
+.results-panel {
+	grid-area: right;
+}
+
+/* other stuff */
+.center {
+	text-align: center;
+}
+
+.source-panel,
+.results-panel {
+	border: 1px solid black;
+}
+
+.results-panel {
+	border-left: 0;
+}
