@@ -1,4 +1,4 @@
-import { Component } from "can";
+import { Component, key } from "can";
 import CodeMirror from "codemirror";
 import recast from "recast";
 import "codemirror/mode/javascript/javascript";
@@ -8,7 +8,7 @@ Component.extend({
 	tag: "code-editor",
 
 	view: `
-		<h2 class="center">Code Editor</h2>
+		<h2 class="center">ViewModel</h2>
 		<textarea value:bind="source"></textarea>
 	`,
 
@@ -20,6 +20,8 @@ Component.extend({
 				textarea,	
 				{
 					lineNumbers: true,
+					// make textarea grow infinitely
+					viewportMargin: Infinity,
 					mode: { name: "javascript" }
 				}
 			);
@@ -45,7 +47,9 @@ Component.extend({
 					"import { DefineMap } from \"can\";",
 					"",
 					"const ViewModel = DefineMap.extend({",
-					"  foo: \"string\"",
+					"  first: { default: \"Kevin\" },",
+					"  last: { default: \"McCallister\" },",
+					"  get name() { return `${this.first} ${this.last}`; }",
 					"});"
 				].join("\n");
 
@@ -56,15 +60,35 @@ Component.extend({
 				listenTo(lastSet, (val) => {
 					clearTimeout(timeoutId);
 					latest = val;
-					timeoutId = setTimeout(update, 1000);
+					// only update source if it hasn't been set for... some time
+					timeoutId = setTimeout(update, 500);
 				});
 
+				// set the default source
 				resolve(latest);
 			}
 		},
-		
-		get ast() {
-			return recast.parse(this.source);
+
+		ast: {
+			value({ listenTo, resolve }) {
+				const update = () => {
+					try {
+						const ast = recast.parse(this.source);
+						resolve(ast);
+					} catch(e) {
+						// if parsing throws, fail silently
+						// the user probably isn't done typing
+						// console.info("parsing AST failed", e);
+					}
+				};
+				listenTo("source", update);
+				update();
+			}
+		},
+
+		get propDefinitions() {
+			const props = key.get(this.ast, "program.body[1].declarations[0].init.arguments[0]");
+			return recast.print(props).code;
 		}
 	}
 });

@@ -12,10 +12,10 @@ Component.extend({
           <h1 class="center">CanJS ViewModel Analyzer</h1>
         </div>
         <div class="source-panel">
-          <code-editor ast:to="scope.vars.ast"></code-editor>
+          <code-editor propDefinitions:to="scope.vars.props"></code-editor>
         </div>
         <div class="results-panel">
-          <dependency-data ast:from="scope.vars.ast"></dependency-data>
+          <dependency-data propDefinitions:from="scope.vars.props"></dependency-data>
         </div>
       </div>
 	`,
