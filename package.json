@@ -35,5 +35,8 @@
         ]
       }
     }
+  },
+  "devDependencies": {
+    "steal-tools": "^2.0.5"
   }
 }
