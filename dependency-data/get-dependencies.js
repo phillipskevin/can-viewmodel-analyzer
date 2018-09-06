@@ -3,7 +3,10 @@ import { Reflect } from "can";
 const getDependencies = (vm) => {
 	const keys = Reflect.getOwnKeys(vm);
 
-	const dependencyData = {};
+	const dependencyData = keys.reduce((acc, key) => {
+		acc[key] = new Set();
+		return acc;
+	}, {});
 
 	const addDependency = (key, prop) => {
 		if (!dependencyData[key]) {
