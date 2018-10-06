@@ -4,12 +4,12 @@ import "./code-editor/code-editor";
 import "./dependency-data/dependency-data";
 
 Component.extend({
-	tag: "viewmodel-analyzer",
+	tag: "sand-box",
 
 	view: `
       <div class="grid-container">
         <div class="header">
-          <h1 class="center">CanJS ViewModel Analyzer</h1>
+          <h1 class="center">CanJS ViewModel Sandbox</h1>
         </div>
         <div class="source-panel">
           <code-editor propDefinitions:to="scope.vars.props"></code-editor>
