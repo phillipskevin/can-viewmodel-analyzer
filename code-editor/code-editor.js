@@ -1,6 +1,7 @@
 import { Component, DefineMap, key } from "can";
 import CodeMirror from "codemirror";
-import recast from "recast";
+import esprima from "esprima";
+import escodegen from "escodegen";
 import "codemirror/mode/javascript/javascript";
 import "./code-editor.less"
 
@@ -72,7 +73,10 @@ Component.extend({
       value({ listenTo, resolve }) {
         const update = () => {
           try {
-            const ast = recast.parse(this.source);
+            const ast = esprima.parse(this.source, {
+              sourceType: "module"
+            });
+
             resolve(ast);
           } catch(e) {
             // if parsing throws, fail silently
@@ -88,10 +92,10 @@ Component.extend({
     get propDefinitions() {
       const props = key.get(
         this.ast,
-        "program.body[1].declarations[0].init.arguments[0]"
+        "body[1].declarations[0].init.arguments[0]"
       );
 
-      return recast.print(props).code;
+      return escodegen.generate(props);
     },
 
     ViewModel: {
