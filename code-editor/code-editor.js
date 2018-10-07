@@ -1,4 +1,4 @@
-import { Component, key } from "can";
+import { Component, DefineMap, key } from "can";
 import CodeMirror from "codemirror";
 import recast from "recast";
 import "codemirror/mode/javascript/javascript";
@@ -39,7 +39,6 @@ Component.extend({
     },
 
     source: {
-      type: "string",
       value({ resolve, listenTo, lastSet }) {
         let timeoutId = null;
 
@@ -87,8 +86,37 @@ Component.extend({
     },
 
     get propDefinitions() {
-      const props = key.get(this.ast, "program.body[1].declarations[0].init.arguments[0]");
+      const props = key.get(
+        this.ast,
+        "program.body[1].declarations[0].init.arguments[0]"
+      );
+
       return recast.print(props).code;
+    },
+
+    ViewModel: {
+      value({ listenTo, resolve }) {
+        const update = () => {
+          try {
+            const makeConstructor = new Function("C", `
+              return C.extend(${this.propDefinitions});
+            `);
+
+            const C = makeConstructor(DefineMap);
+            resolve(C);
+          } catch(e) {
+            // if creating constructor throws, fail silently
+            // the user probably isn't done typing
+            // ie user is in the middle of typing a property name
+            // `fo`
+            // console.info("Creating VM failed", e);
+          }
+        };
+
+        listenTo("propDefinitions", update);
+
+        update();
+      }
     }
   }
 });

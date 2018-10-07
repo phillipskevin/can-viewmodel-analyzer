@@ -13,12 +13,12 @@ Component.extend({
       </div>
       <div class="source-panel">
         <code-editor
-          propDefinitions:to="scope.vars.props"
+          ViewModel:to="scope.vars.ViewModel"
         ></code-editor>
       </div>
       <div class="results-panel">
         <dependency-data
-          propDefinitions:from="scope.vars.props"
+          ViewModel:from="scope.vars.ViewModel"
         ></dependency-data>
       </div>
     </div>

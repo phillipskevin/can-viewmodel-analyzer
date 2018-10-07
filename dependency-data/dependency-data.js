@@ -1,5 +1,4 @@
-import { Component, DefineMap } from "can";
-import recast from "recast";
+import { Component } from "can";
 import vis from "vis";
 import getDependencies from "./get-dependencies";
 import "./dependency-data.less";
@@ -16,8 +15,6 @@ Component.extend({
     connectedCallback(el) {
       const key = this.key
       const dependencies = this.dependencyData;
-
-      // console.log("dependencies", dependencies);
 
       let nodeId = 1;
       const nodeToIdMap = {
@@ -67,7 +64,6 @@ Component.extend({
         nodes: new vis.DataSet(nodes),
         edges: new vis.DataSet(edges)
       }, options);
-
     },
     key: "string",
     dependencyData: "any"
@@ -91,30 +87,10 @@ Component.extend({
   `,
 
   ViewModel: {
-    propDefinitions: "any",
-
-    VM: {
-      value({ listenTo, resolve }) {
-        const update = () => {
-          try {
-            const c = new Function("C", `return C.extend(${this.propDefinitions});`);
-            const C = c(DefineMap);
-            resolve(C);
-          } catch(e) {
-            // if creating constructor throws, fail silently
-            // the user probably isn't done typing
-            // ie user is in the middle of typing a property name
-            // `fo`
-            // console.info("Creating VM failed", e);
-          }
-        };
-        listenTo("propDefinitions", update);
-        update();
-      }
-    },
+    ViewModel: "any",
 
     get vm() {
-      return new this.VM();
+      return new this.ViewModel();
     },
 
     dependencies: {
