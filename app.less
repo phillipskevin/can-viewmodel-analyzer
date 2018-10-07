@@ -1,27 +1,19 @@
 /* grid stuff */
 .grid-container {
 	display: grid;
-	height: 100%;
 	grid-template-columns: 1fr 1fr;
-	grid-template-rows: 1fr 1fr 1fr 1fr;
-	grid-template-areas: "header header"
-											 "left right"
-											 "left right"
-											 "left right";
 }
 
 .header {
-	grid-area: header;
+	grid-column: 1 / span 2;
 }
 
 .source-panel {
-	grid-area: left;
-	min-height: 500px;
+	grid-column: 1;
 }
 
 .results-panel {
-	grid-area: right;
-	min-height: 500px;
+	grid-column: 2;
 }
 
 /* other stuff */
