@@ -1,58 +1,58 @@
 import { Reflect } from "can";
 
 const getDependencies = (vm) => {
-	const keys = Reflect.getOwnKeys(vm);
+  const keys = Reflect.getOwnKeys(vm);
 
-	const dependencyData = keys.reduce((acc, key) => {
-		acc[key] = new Set();
-		return acc;
-	}, {});
+  const dependencyData = keys.reduce((acc, key) => {
+    acc[key] = new Set();
+    return acc;
+  }, {});
 
-	const addDependency = (key, prop) => {
-		if (!dependencyData[key]) {
-			dependencyData[key] = new Set();
-		}
+  const addDependency = (key, prop) => {
+    if (!dependencyData[key]) {
+      dependencyData[key] = new Set();
+    }
 
-		dependencyData[key].add(prop);
-	};
+    dependencyData[key].add(prop);
+  };
 
-	const addValueDependencyDepsForKey = (key) => (valueDependency) => {
-		const valueDepDeps = Reflect.getValueDependencies(valueDependency) || {};
-		const valueDepKeyDependencies = valueDepDeps.keyDependencies || [];
-		const valueDepValueDependencies = valueDepDeps.valueDependencies || [];
+  const addValueDependencyDepsForKey = (key) => (valueDependency) => {
+    const valueDepDeps = Reflect.getValueDependencies(valueDependency) || {};
+    const valueDepKeyDependencies = valueDepDeps.keyDependencies || [];
+    const valueDepValueDependencies = valueDepDeps.valueDependencies || [];
 
-		// recurse over valueDependencies of this valueDependency
-		valueDepValueDependencies.forEach(addValueDependencyDepsForKey(key));
+    // recurse over valueDependencies of this valueDependency
+    valueDepValueDependencies.forEach(addValueDependencyDepsForKey(key));
 
-		valueDepKeyDependencies.forEach((props) => {
-			props.forEach(prop => {
-				addDependency(key, prop);
-			});
-		});
-	};
+    valueDepKeyDependencies.forEach((props) => {
+      props.forEach(prop => {
+        addDependency(key, prop);
+      });
+    });
+  };
 
-	keys.forEach((key) => {
-		// bind to update dependency data
-		Reflect.onKeyValue(vm, key, () => {});
+  keys.forEach((key) => {
+    // bind to update dependency data
+    Reflect.onKeyValue(vm, key, () => {});
 
-		const deps = Reflect.getKeyDependencies(vm, key);
-		const keyDependencies = (deps && deps.keyDependencies) || [];
-		const valueDependencies = (deps && deps.valueDependencies) || [];
+    const deps = Reflect.getKeyDependencies(vm, key);
+    const keyDependencies = (deps && deps.keyDependencies) || [];
+    const valueDependencies = (deps && deps.valueDependencies) || [];
 
-		// iterate over keyDependencies Map
-		keyDependencies.forEach((value, prop) => {
-			addDependency(key, prop);
-		});
+    // iterate over keyDependencies Map
+    keyDependencies.forEach((value, prop) => {
+      addDependency(key, prop);
+    });
 
-		// iterate over valueDependencies Set
-		valueDependencies.forEach(addValueDependencyDepsForKey(key));
-	});
+    // iterate over valueDependencies Set
+    valueDependencies.forEach(addValueDependencyDepsForKey(key));
+  });
 
-	let result = {};
-	for (let key in dependencyData) {
-		result[key] = [ ...dependencyData[key] ];
-	}
-	return result;
+  let result = {};
+  for (let key in dependencyData) {
+    result[key] = [ ...dependencyData[key] ];
+  }
+  return result;
 };
 
 export default getDependencies;
