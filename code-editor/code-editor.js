@@ -1,4 +1,4 @@
-import { Component, DefineMap, key } from "can";
+import { Component, key } from "can";
 import CodeMirror from "codemirror";
 import esprima from "esprima";
 import escodegen from "escodegen";
@@ -100,14 +100,23 @@ Component.extend({
 
     ViewModel: {
       value({ listenTo, resolve }) {
+        let canDependencies = "DefineMap";
+
         const update = () => {
           try {
-            const makeConstructor = new Function("C", `
-              return C.extend(${this.propDefinitions});
+            const makeConstructor = new Function(`
+              return import("//unpkg.com/can@5/everything.mjs")
+                .then((module) => {
+                  const { ${canDependencies} } = module;
+
+                  return DefineMap.extend(${this.propDefinitions});
+                });
             `);
 
-            const C = makeConstructor(DefineMap);
-            resolve(C);
+            makeConstructor()
+              .then((VM) => {
+                resolve( VM );
+              });
           } catch(e) {
             // if creating constructor throws, fail silently
             // the user probably isn't done typing

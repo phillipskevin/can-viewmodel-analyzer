@@ -89,15 +89,19 @@ Component.extend({
   ViewModel: {
     ViewModel: "any",
 
-    get vm() {
-      return new this.ViewModel();
+    vm: {
+      value({ listenTo, resolve }) {
+        listenTo("ViewModel", (ev, ViewModel) => {
+          resolve( new this.ViewModel() );
+        });
+      }
     },
 
     dependencies: {
       value({ listenTo, resolve }) {
-        const update = (vm) => {
+        const update = (ev, vm) => {
           try {
-            const deps = getDependencies(this.vm);
+            const deps = getDependencies(vm);
             resolve(deps);
           } catch(e) {
             // if getting dependencies throws, fail silently
@@ -109,7 +113,6 @@ Component.extend({
         };
 
         listenTo("vm", update);
-        update(this.vm);
       }
     }
   }
