@@ -98,9 +98,24 @@ Component.extend({
       return escodegen.generate(props);
     },
 
+    get canDependencies() {
+      const specifiers = key.get(
+        this.ast,
+        "body[0].specifiers"
+      );
+
+      return specifiers.map((specifier) => {
+        return specifier.imported.name;
+      });
+    },
+
     ViewModel: {
       value({ listenTo, resolve }) {
         let canDependencies = "DefineMap";
+
+        listenTo("canDependencies", (ev, newVal) => {
+          canDependencies = newVal;
+        });
 
         const update = () => {
           try {
