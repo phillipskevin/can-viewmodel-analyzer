@@ -1,39 +1,31 @@
 /* grid stuff */
 .grid-container {
-	display: grid;
-	height: 100%;
-	grid-template-columns: 1fr 1fr;
-	grid-template-rows: 1fr 1fr 1fr 1fr;
-	grid-template-areas: "header header"
-											 "left right"
-											 "left right"
-											 "left right";
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 
 .header {
-	grid-area: header;
+  grid-column: 1 / span 2;
 }
 
 .source-panel {
-	grid-area: left;
-	min-height: 500px;
+  grid-column: 1;
 }
 
 .results-panel {
-	grid-area: right;
-	min-height: 500px;
+  grid-column: 2;
 }
 
 /* other stuff */
 .center {
-	text-align: center;
+  text-align: center;
 }
 
 .source-panel,
 .results-panel {
-	border: 1px solid black;
+  border: 1px solid black;
 }
 
 .results-panel {
-	border-left: 0;
+  border-left: 0;
 }
